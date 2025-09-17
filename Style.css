@@ -1,0 +1,54 @@
+/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+/* Estilo geral */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #F0F2F6;
+}
+
+/* Título e subtítulo */
+h1, h3 {
+    text-align: center;
+    color: #4B0082;
+}
+
+.stTitle {
+    background: -webkit-linear-gradient(45deg, #A020F0, #8A2BE2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 3.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Caixa de texto de entrada */
+.stTextInput > div > div > input {
+    border: 2px solid #A020F0;
+    border-radius: 25px;
+    padding: 10px 20px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Balões de chat */
+.stChatMessage {
+    padding: 15px;
+    border-radius: 18px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Balão do assistente */
+.stChatMessage.assistant {
+    background-color: #E6E6FA; /* Lavanda */
+    color: #333333;
+    border-top-left-radius: 0;
+}
+
+/* Balão do usuário */
+.stChatMessage.user {
+    background-color: #FFFFFF;
+    color: #333333;
+    border-top-right-radius: 0;
+}
