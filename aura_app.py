@@ -1,5 +1,5 @@
 import streamlit as st
-from openai import OpenAI
+from llama_cpp import Llama
 import os
 
 # Função para injetar CSS
@@ -19,8 +19,20 @@ def chat_app():
     
     # Adicionar uma linha divisória para separar o cabeçalho
     st.markdown("---")
+    
+    # Carregar o modelo de IA
+    MODEL_PATH = "Meta-Llama-3-8B-Instruct-Q4_K_M.gguf"
+    if not os.path.exists(MODEL_PATH):
+        st.error(f"O arquivo do modelo '{MODEL_PATH}' não foi encontrado.")
+        st.stop()
+    
+    if "llm" not in st.session_state:
+        st.session_state.llm = Llama(
+            model_path=MODEL_PATH,
+            chat_format="llama-3"
+        )
 
-    # Inicializar cliente da API e histórico de conversa
+    # Inicializar histórico de conversa
     if "history" not in st.session_state:
         st.session_state.history = [
             {"role": "system", "content": "Você é Aura, uma IA amigável e útil."},
@@ -51,16 +63,20 @@ def chat_app():
         with st.chat_message("assistant"):
             with st.spinner("Aura está pensando..."):
                 try:
-                    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-                    response = client.chat.completions.create(
-                        model="gpt-4o-mini",
+                    stream = st.session_state.llm.create_chat_completion(
                         messages=[{"role": m["role"], "content": m["content"]} for m in st.session_state.history],
-                        temperature=0.7,
-                        max_tokens=500
+                        stream=True,
                     )
-                    aura_reply = response.choices[0].message.content
-                    st.markdown(aura_reply)
-                    st.session_state.history.append({"role": "assistant", "content": aura_reply})
+                    
+                    full_response = ""
+                    for chunk in stream:
+                        content = chunk['choices'][0]['delta'].get('content', '')
+                        full_response += content
+                        st.markdown(full_response + "▌", unsafe_allow_html=True)
+                    
+                    st.session_state.history.append({"role": "assistant", "content": full_response})
+                    st.markdown(full_response)
+                    
                 except Exception as e:
                     st.error(f"Ocorreu um erro: {e}")
                     st.session_state.history.append({"role": "assistant", "content": "Desculpe, algo deu errado. Por favor, tente novamente mais tarde."})
@@ -68,3 +84,4 @@ def chat_app():
 # Executa o aplicativo
 if __name__ == "__main__":
     chat_app()
+
